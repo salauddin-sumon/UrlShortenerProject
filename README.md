@@ -15,7 +15,7 @@ A full-stack URL shortener built with MERN stack featuring JWT authentication, r
 
 ## Tech Stack
 
-**Backend:** Node.js, Express.js, MongoDB, Mongoose, JWT, bcryptjs
+**Backend:** Node.js, Express.js, MongoDB, Mongoose, JWT, bcryptjs//
 **Frontend:** React, Tailwind CSS, React Router, Axios
 
 ## Installation

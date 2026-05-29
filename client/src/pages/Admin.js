@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
+import UserStatsModal from '../components/UserStatsModal';
 import api from '../config/api';
 import toast from 'react-hot-toast';
-import { HiOutlineUsers, HiOutlineLink, HiOutlineCursorClick, HiOutlineShieldCheck, HiOutlineSearch, HiOutlineX, HiOutlineCheck, HiOutlineTrash } from 'react-icons/hi';
+import { HiOutlineUsers, HiOutlineLink, HiOutlineCursorClick, HiOutlineShieldCheck, HiOutlineSearch, HiOutlineX, HiOutlineCheck, HiOutlineTrash, HiOutlineChartBar } from 'react-icons/hi';
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -15,6 +17,7 @@ const Admin = () => {
   const [userTotalPages, setUserTotalPages] = useState(1);
   const [urlTotalPages, setUrlTotalPages] = useState(1);
   const [search, setSearch] = useState('');
+  const [statsUserId, setStatsUserId] = useState(null);
 
   useEffect(() => {
     if (activeTab === 'dashboard') fetchDashboard();
@@ -188,12 +191,17 @@ const Admin = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="glass-card">
                     <h3 className="text-lg font-semibold text-white mb-4">Recent Users</h3>
                     <div className="space-y-3">
                       {dashboard.recentUsers.map((user) => (
-                        <div key={user._id} className="flex items-center justify-between p-3 bg-surface-dark/50 rounded-lg">
+                        <button
+                          key={user._id}
+                          type="button"
+                          onClick={() => setStatsUserId(user._id)}
+                          className="w-full flex items-center justify-between p-3 bg-surface-dark/50 rounded-lg hover:bg-surface-dark transition-all text-left"
+                        >
                           <div>
                             <p className="text-sm font-medium text-white">{user.name}</p>
                             <p className="text-xs text-gray-500">{user.email}</p>
@@ -201,7 +209,7 @@ const Admin = () => {
                           <span className="px-2 py-0.5 text-xs bg-primary-600/20 text-primary-400 rounded-full capitalize">
                             {user.role}
                           </span>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -210,13 +218,35 @@ const Admin = () => {
                     <h3 className="text-lg font-semibold text-white mb-4">Top URLs</h3>
                     <div className="space-y-3">
                       {dashboard.topUrls.slice(0, 5).map((url) => (
-                        <div key={url.urlId} className="flex items-center justify-between p-3 bg-surface-dark/50 rounded-lg">
+                        <Link
+                          key={url.urlId}
+                          to={`/admin/urls/${url.urlId}/analytics`}
+                          className="flex items-center justify-between p-3 bg-surface-dark/50 rounded-lg hover:bg-surface-dark transition-all"
+                        >
                           <div className="flex-1 min-w-0 mr-3">
                             <p className="text-sm font-medium text-white truncate">{url.title}</p>
-                            <p className="text-xs text-primary-400 truncate">/{url.shortCode}</p>
+                            <p className="text-xs text-primary-400 truncate">/{url.customAlias || url.shortCode}</p>
                           </div>
                           <span className="text-sm text-gray-400">{url.clickCount} clicks</span>
-                        </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="glass-card">
+                    <h3 className="text-lg font-semibold text-white mb-4">Recent URLs</h3>
+                    <div className="space-y-3">
+                      {dashboard.recentUrls?.map((url) => (
+                        <Link
+                          key={url._id}
+                          to={`/admin/urls/${url._id}/analytics`}
+                          className="block p-3 bg-surface-dark/50 rounded-lg hover:bg-surface-dark transition-all"
+                        >
+                          <p className="text-sm font-medium text-white truncate">{url.title}</p>
+                          <p className="text-xs text-gray-500 truncate">
+                            {url.userId?.name} · {url.clicks} clicks
+                          </p>
+                        </Link>
                       ))}
                     </div>
                   </div>
@@ -260,6 +290,14 @@ const Admin = () => {
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
+                        <button
+                          type="button"
+                          onClick={() => setStatsUserId(user._id)}
+                          className="p-2 text-gray-500 hover:text-primary-400 hover:bg-surface-dark rounded-lg transition-all"
+                          title="View stats"
+                        >
+                          <HiOutlineChartBar className="w-4 h-4" />
+                        </button>
                         <span className={`px-2 py-0.5 text-xs rounded-full capitalize ${
                           user.isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
                         }`}>
@@ -356,6 +394,13 @@ const Admin = () => {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
+                        <Link
+                          to={`/admin/urls/${url._id}/analytics`}
+                          className="p-2 text-gray-500 hover:text-primary-400 hover:bg-surface-dark rounded-lg transition-all"
+                          title="Analytics"
+                        >
+                          <HiOutlineChartBar className="w-4 h-4" />
+                        </Link>
                         {url.tags?.map((tag, i) => (
                           <span key={i} className="px-2 py-0.5 bg-surface-dark rounded-full text-xs text-gray-400">
                             {tag}
@@ -386,6 +431,10 @@ const Admin = () => {
           </div>
         )}
       </div>
+
+      {statsUserId && (
+        <UserStatsModal userId={statsUserId} onClose={() => setStatsUserId(null)} />
+      )}
     </Layout>
   );
 };

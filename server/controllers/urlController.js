@@ -117,8 +117,14 @@ const getUrlById = asyncHandler(async (req, res) => {
         throw new AppError('URL not found', 404);
     }
 
-    const clickStats = await Click.getClickStats(url._id);
-    const clicksByDate = await Click.getClicksByDate(url._id);
+    const [clickStats, clicksByDate, recentClicks] = await Promise.all([
+        Click.getClickStats(url._id),
+        Click.getClicksByDate(url._id),
+        Click.find({ urlId: url._id })
+            .sort('-timestamp')
+            .limit(20)
+            .select('ipAddress userAgent referrer timestamp device browser')
+    ]);
 
     res.status(200).json({
         success: true,
@@ -128,7 +134,8 @@ const getUrlById = asyncHandler(async (req, res) => {
                 shortUrl: buildShortUrl(req, url),
                 analytics: {
                     ...clickStats,
-                    clicksByDate
+                    clicksByDate,
+                    recentClicks
                 }
             }
         }

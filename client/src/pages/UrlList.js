@@ -4,7 +4,7 @@ import Layout from '../components/Layout';
 import api from '../config/api';
 import { getShortUrl } from '../utils/shortUrl';
 import toast from 'react-hot-toast';
-import { HiOutlinePlus, HiOutlineSearch, HiOutlineClipboardCopy, HiOutlineExternalLink, HiOutlineTrash, HiOutlinePencil } from 'react-icons/hi';
+import { HiOutlinePlus, HiOutlineSearch, HiOutlineClipboardCopy, HiOutlineExternalLink, HiOutlineTrash, HiOutlineChartBar } from 'react-icons/hi';
 
 const UrlList = () => {
   const [urls, setUrls] = useState([]);
@@ -139,11 +139,11 @@ const UrlList = () => {
                         <HiOutlineClipboardCopy className="w-4 h-4" />
                       </button>
                       <Link
-                        to={`/urls/${url._id}/edit`}
-                        className="p-2 text-gray-500 hover:text-amber-400 hover:bg-surface-dark rounded-lg transition-all"
-                        title="Edit"
+                        to={`/urls/${url._id}/analytics`}
+                        className="p-2 text-gray-500 hover:text-primary-400 hover:bg-surface-dark rounded-lg transition-all"
+                        title="Analytics"
                       >
-                        <HiOutlinePencil className="w-4 h-4" />
+                        <HiOutlineChartBar className="w-4 h-4" />
                       </Link>
                       <button
                         onClick={() => deleteUrl(url._id)}

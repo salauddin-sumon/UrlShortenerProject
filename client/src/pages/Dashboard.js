@@ -18,13 +18,21 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const response = await api.get('/api/urls?limit=5&sort=-createdAt');
-      setUrls(response.data.data.urls);
-      
-      setStats({
-        totalUrls: response.data.total,
-        totalClicks: response.data.data.urls.reduce((sum, url) => sum + url.clicks, 0),
-        activeUrls: response.data.data.urls.filter(url => url.isActive).length,
-      });
+      const { urls } = response.data.data;
+      const total = response.data.total;
+      setUrls(urls);
+
+      let totalClicks = 0;
+      let activeUrls = 0;
+      if (total > 0) {
+        const limit = Math.min(total, 100);
+        const allResponse = await api.get(`/api/urls?limit=${limit}&sort=-createdAt`);
+        const allUrls = allResponse.data.data.urls;
+        totalClicks = allUrls.reduce((sum, url) => sum + url.clicks, 0);
+        activeUrls = allUrls.filter((url) => url.isActive).length;
+      }
+
+      setStats({ totalUrls: total, totalClicks, activeUrls });
     } catch (error) {
       toast.error('Failed to load dashboard data');
     } finally {
@@ -129,6 +137,13 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
+                    <Link
+                      to={`/urls/${url._id}/analytics`}
+                      className="p-2 text-gray-500 hover:text-primary-400 hover:bg-surface-medium rounded-lg transition-all"
+                      title="Analytics"
+                    >
+                      <HiOutlineChartBar className="w-4 h-4" />
+                    </Link>
                     <button
                       onClick={() => copyToClipboard(getShortUrl(url))}
                       className="p-2 text-gray-500 hover:text-primary-400 hover:bg-surface-medium rounded-lg transition-all"

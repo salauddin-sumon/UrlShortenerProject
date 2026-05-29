@@ -12,6 +12,7 @@ import UrlList from './pages/UrlList';
 import UrlForm from './pages/UrlForm';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
+import UrlAnalytics from './pages/UrlAnalytics';
 
 function App() {
   return (
@@ -49,6 +50,10 @@ function App() {
           <Route path="/urls/create" element={
             <ProtectedRoute><UrlForm /></ProtectedRoute>
           } />
+
+          <Route path="/urls/:id/analytics" element={
+            <ProtectedRoute><UrlAnalytics /></ProtectedRoute>
+          } />
           
           <Route path="/profile" element={
             <ProtectedRoute><Profile /></ProtectedRoute>
@@ -56,6 +61,10 @@ function App() {
           
           <Route path="/admin" element={
             <ProtectedRoute adminOnly={true}><Admin /></ProtectedRoute>
+          } />
+
+          <Route path="/admin/urls/:id/analytics" element={
+            <ProtectedRoute adminOnly={true}><UrlAnalytics /></ProtectedRoute>
           } />
         </Routes>
       </AuthProvider>

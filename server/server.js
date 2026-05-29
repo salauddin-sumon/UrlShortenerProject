@@ -20,19 +20,35 @@ app.set('trust proxy', 1);
 app.use(securityHeaders);
 logger.info('Security headers initialized');
 
+const normalizeOrigin = (origin) =>
+    origin?.trim().replace(/\/$/, '');
+
+const isOriginAllowed = (origin) => {
+    if (!origin) return true;
+    const normalized = normalizeOrigin(origin);
+    return config.cors.origins.some(
+        (allowed) => normalizeOrigin(allowed) === normalized
+    );
+};
+
 app.use(cors({
     origin(origin, callback) {
-        if (!origin || config.cors.origins.includes(origin)) {
+        if (isOriginAllowed(origin)) {
             callback(null, true);
         } else {
-            callback(new Error(`Origin ${origin} not allowed by CORS`));
+            logger.warn('CORS blocked request', {
+                origin,
+                allowed: config.cors.origins
+            });
+            callback(null, false);
         }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 204
 }));
-logger.info('CORS configured');
+logger.info('CORS allowed origins', { origins: config.cors.origins });
 
 app.use('/api', apiLimiter);
 app.use(requestLogger);

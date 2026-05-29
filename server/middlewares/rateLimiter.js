@@ -1,6 +1,8 @@
 const rateLimit = require('express-rate-limit');
 const AppError = require('../utils/AppError');
 
+const skipPreflight = (req) => req.method === 'OPTIONS';
+
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 20,
@@ -10,7 +12,8 @@ const authLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: false
+    skipSuccessfulRequests: false,
+    skip: skipPreflight
 });
 
 const urlCreateLimiter = rateLimit({
@@ -32,7 +35,8 @@ const apiLimiter = rateLimit({
         message: 'API rate limit exceeded. Please try again in 15 minutes.'
     },
     standardHeaders: true,
-    legacyHeaders: false
+    legacyHeaders: false,
+    skip: skipPreflight
 });
 
 const createCustomLimiter = (windowMinutes, maxRequests, message) => {

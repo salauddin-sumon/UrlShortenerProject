@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import api from '../config/api';
+import { getShortUrl } from '../utils/shortUrl';
 import toast from 'react-hot-toast';
 import { HiOutlinePlus, HiOutlineSearch, HiOutlineClipboardCopy, HiOutlineExternalLink, HiOutlineTrash, HiOutlinePencil } from 'react-icons/hi';
 
@@ -107,7 +108,7 @@ const UrlList = () => {
                         </span>
                       </div>
                       <a
-                        href={`http://localhost:5000/${url.customAlias || url.shortCode}`}
+                        href={getShortUrl(url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-primary-400 hover:text-primary-300 flex items-center space-x-1"
@@ -131,7 +132,7 @@ const UrlList = () => {
                     </div>
                     <div className="flex items-center space-x-1">
                       <button
-                        onClick={() => copyToClipboard(`http://localhost:5000/${url.customAlias || url.shortCode}`)}
+                        onClick={() => copyToClipboard(getShortUrl(url))}
                         className="p-2 text-gray-500 hover:text-primary-400 hover:bg-surface-dark rounded-lg transition-all"
                         title="Copy link"
                       >

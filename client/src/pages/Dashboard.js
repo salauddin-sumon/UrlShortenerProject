@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import api from '../config/api';
+import { getShortUrl } from '../utils/shortUrl';
 import toast from 'react-hot-toast';
 import { HiOutlineLink, HiOutlineCursorClick, HiOutlinePlus, HiOutlineExternalLink, HiOutlineClipboardCopy, HiOutlineTrash, HiOutlineChartBar } from 'react-icons/hi';
 
@@ -116,7 +117,7 @@ const Dashboard = () => {
                     <p className="text-sm font-medium text-white truncate">{url.title}</p>
                     <div className="flex items-center space-x-3 mt-1">
                       <a
-                        href={`http://localhost:5000/${url.customAlias || url.shortCode}`}
+                        href={getShortUrl(url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-primary-400 hover:text-primary-300 truncate flex items-center space-x-1"
@@ -129,7 +130,7 @@ const Dashboard = () => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => copyToClipboard(`http://localhost:5000/${url.customAlias || url.shortCode}`)}
+                      onClick={() => copyToClipboard(getShortUrl(url))}
                       className="p-2 text-gray-500 hover:text-primary-400 hover:bg-surface-medium rounded-lg transition-all"
                       title="Copy link"
                     >

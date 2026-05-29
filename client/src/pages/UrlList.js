@@ -15,6 +15,7 @@ const UrlList = () => {
 
   useEffect(() => {
     fetchUrls();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, search]);
 
   const fetchUrls = async () => {

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import api from '../config/api';
 import toast from 'react-hot-toast';
-import { HiOutlineLink, HiOutlineCursorClick, HiOutlineClock, HiOutlinePlus, HiOutlineExternalLink, HiOutlineClipboardCopy, HiOutlineTrash, HiOutlineChartBar } from 'react-icons/hi';
+import { HiOutlineLink, HiOutlineCursorClick, HiOutlinePlus, HiOutlineExternalLink, HiOutlineClipboardCopy, HiOutlineTrash, HiOutlineChartBar } from 'react-icons/hi';
 
 const Dashboard = () => {
   const [urls, setUrls] = useState([]);

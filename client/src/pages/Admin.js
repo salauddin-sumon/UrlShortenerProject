@@ -20,6 +20,7 @@ const Admin = () => {
     if (activeTab === 'dashboard') fetchDashboard();
     else if (activeTab === 'users') fetchUsers();
     else if (activeTab === 'urls') fetchUrls();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, userPage, urlPage]);
 
   const fetchDashboard = async () => {

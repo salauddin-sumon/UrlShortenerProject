@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://urlshortenerproject-152r.onrender.com';
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://urlshortenerproject-152r.onrender.com'
+    : 'http://localhost:5000');
 
 const api = axios.create({
   baseURL: API_URL,

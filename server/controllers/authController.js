@@ -2,6 +2,7 @@ const User = require('../models/User');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
 const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../utils/jwt');
+const { refreshTokenCookieOptions } = require('../utils/cookies');
 
 const register = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
@@ -19,12 +20,7 @@ const register = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie('refreshToken', refreshToken, refreshTokenCookieOptions);
 
     res.status(201).json({
         success: true,
@@ -56,12 +52,7 @@ const login = asyncHandler(async (req, res) => {
     user.lastLogin = Date.now();
     await user.save({ validateBeforeSave: false });
 
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie('refreshToken', refreshToken, refreshTokenCookieOptions);
 
     res.status(200).json({
         success: true,
@@ -77,7 +68,7 @@ const logout = asyncHandler(async (req, res) => {
     req.user.refreshToken = null;
     await req.user.save({ validateBeforeSave: false });
 
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', refreshTokenCookieOptions);
 
     res.status(200).json({
         success: true,
@@ -105,12 +96,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     user.refreshToken = newRefreshToken;
     await user.save({ validateBeforeSave: false });
 
-    res.cookie('refreshToken', newRefreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie('refreshToken', newRefreshToken, refreshTokenCookieOptions);
 
     res.status(200).json({
         success: true,
@@ -167,7 +153,7 @@ const changePassword = asyncHandler(async (req, res) => {
     user.refreshToken = null;
     await user.save();
 
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', refreshTokenCookieOptions);
 
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
@@ -175,12 +161,7 @@ const changePassword = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000
-    });
+    res.cookie('refreshToken', refreshToken, refreshTokenCookieOptions);
 
     res.status(200).json({
         success: true,

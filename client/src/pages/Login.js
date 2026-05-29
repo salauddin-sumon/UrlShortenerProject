@@ -20,7 +20,10 @@ const Login = () => {
       toast.success('Welcome back!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      const message = error.response?.data?.message
+        || (error.message === 'Network Error' ? 'Cannot reach API — check CORS and REACT_APP_API_URL on Vercel' : null)
+        || 'Login failed';
+      toast.error(message);
     } finally {
       setLoading(false);
     }

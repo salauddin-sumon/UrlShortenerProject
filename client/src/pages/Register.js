@@ -28,7 +28,10 @@ const Register = () => {
       toast.success('Account created successfully!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      const message = error.response?.data?.message
+        || (error.message === 'Network Error' ? 'Cannot reach API — check CORS and REACT_APP_API_URL on Vercel' : null)
+        || 'Registration failed';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -88,7 +91,7 @@ const Register = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="input-field pl-10 pr-10"
-                  placeholder="Min. 8 characters"
+                  placeholder="Min. 8 chars, upper, lower, number"
                   required
                 />
                 <button

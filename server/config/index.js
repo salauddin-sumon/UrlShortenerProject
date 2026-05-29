@@ -11,7 +11,10 @@ const config = {
         refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
     },
     cors: {
-        origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+        origins: (process.env.CORS_ORIGIN || 'http://localhost:3000')
+            .split(',')
+            .map((origin) => origin.trim())
+            .filter(Boolean),
     },
     bcrypt: {
         saltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12,

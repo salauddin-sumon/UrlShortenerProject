@@ -3,6 +3,7 @@ const Click = require('../models/Click');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
 const { generateShortCode, generateCustomCode } = require('../utils/shortCode');
+const { buildShortUrl } = require('../utils/publicUrl');
 
 const createShortUrl = asyncHandler(async (req, res) => {
     const { longUrl, customAlias, title, tags, expiresAt } = req.body;
@@ -43,7 +44,7 @@ const createShortUrl = asyncHandler(async (req, res) => {
             url: {
                 id: url._id,
                 longUrl: url.longUrl,
-                shortUrl: `${req.protocol}://${req.get('host')}/${url.customAlias || url.shortCode}`,
+                shortUrl: buildShortUrl(req, url),
                 shortCode: url.shortCode,
                 customAlias: url.customAlias,
                 title: url.title,
@@ -91,7 +92,7 @@ const getUserUrls = asyncHandler(async (req, res) => {
 
     const urlsWithShortUrl = urls.map(url => ({
         ...url.toObject(),
-        shortUrl: `${req.protocol}://${req.get('host')}/${url.customAlias || url.shortCode}`
+        shortUrl: buildShortUrl(req, url)
     }));
 
     res.status(200).json({
@@ -124,7 +125,7 @@ const getUrlById = asyncHandler(async (req, res) => {
         data: {
             url: {
                 ...url.toObject(),
-                shortUrl: `${req.protocol}://${req.get('host')}/${url.customAlias || url.shortCode}`,
+                shortUrl: buildShortUrl(req, url),
                 analytics: {
                     ...clickStats,
                     clicksByDate
@@ -171,7 +172,7 @@ const updateUrl = asyncHandler(async (req, res) => {
         data: {
             url: {
                 ...url.toObject(),
-                shortUrl: `${req.protocol}://${req.get('host')}/${url.customAlias || url.shortCode}`
+                shortUrl: buildShortUrl(req, url)
             }
         }
     });

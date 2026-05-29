@@ -38,14 +38,24 @@ const Profile = () => {
     }
   };
 
+  const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
   const handlePasswordChange = async (e) => {
     e.preventDefault();
+    if (!passwordData.currentPassword.trim()) {
+      toast.error('Enter your current password');
+      return;
+    }
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast.error('New passwords do not match');
       return;
     }
-    if (passwordData.newPassword.length < 8) {
-      toast.error('Password must be at least 8 characters');
+    if (!passwordPattern.test(passwordData.newPassword)) {
+      toast.error('New password needs 8+ chars with uppercase, lowercase, and a number');
+      return;
+    }
+    if (passwordData.currentPassword === passwordData.newPassword) {
+      toast.error('New password must be different from current password');
       return;
     }
     setPasswordLoading(true);
@@ -225,47 +235,85 @@ const Profile = () => {
               </div>
             </div>
           ) : (
-            <form onSubmit={handlePasswordChange} className="space-y-4 border-t border-gray-800 pt-6">
+            <form
+              onSubmit={handlePasswordChange}
+              autoComplete="off"
+              className="space-y-4 border-t border-gray-800 pt-6"
+            >
+              <input
+                type="text"
+                name="prevent_autofill_username"
+                autoComplete="username"
+                className="sr-only"
+                tabIndex={-1}
+                aria-hidden="true"
+                readOnly
+              />
+              <input
+                type="password"
+                name="prevent_autofill_password"
+                autoComplete="new-password"
+                className="sr-only"
+                tabIndex={-1}
+                aria-hidden="true"
+                readOnly
+              />
+
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Current password</label>
+                <label htmlFor="current-password" className="block text-sm font-medium text-gray-300 mb-2">
+                  Current password
+                </label>
                 <div className="relative">
                   <HiOutlineLockClosed className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                   <input
+                    id="current-password"
                     type="password"
+                    name="current-password"
+                    autoComplete="current-password"
                     value={passwordData.currentPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                     className="input-field pl-10"
-                    placeholder="Enter current password"
+                    placeholder="Type your current password"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">New password</label>
+                <label htmlFor="new-password" className="block text-sm font-medium text-gray-300 mb-2">
+                  New password
+                </label>
                 <div className="relative">
                   <HiOutlineLockClosed className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                   <input
+                    id="new-password"
                     type="password"
+                    name="new-password"
+                    autoComplete="new-password"
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                     className="input-field pl-10"
-                    placeholder="Min. 8 characters, include uppercase & number"
+                    placeholder="Min. 8 chars, upper, lower, number"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Confirm new password</label>
+                <label htmlFor="confirm-new-password" className="block text-sm font-medium text-gray-300 mb-2">
+                  Confirm new password
+                </label>
                 <div className="relative">
                   <HiOutlineLockClosed className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                   <input
+                    id="confirm-new-password"
                     type="password"
+                    name="confirm-new-password"
+                    autoComplete="new-password"
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                     className="input-field pl-10"
-                    placeholder="Repeat new password"
+                    placeholder="Type new password again"
                     required
                   />
                 </div>

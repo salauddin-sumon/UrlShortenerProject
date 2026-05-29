@@ -10,6 +10,9 @@ const config = {
         accessExpiry: process.env.JWT_ACCESS_EXPIRY || '15m',
         refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
     },
+    publicUrl: process.env.BASE_URL
+        ? process.env.BASE_URL.trim().replace(/\/$/, '')
+        : null,
     cors: {
         origins: (process.env.CORS_ORIGIN || 'http://localhost:3000')
             .split(',')
@@ -17,6 +20,7 @@ const config = {
                 origin.trim().replace(/^["']|["']$/g, '').replace(/\/$/, '')
             )
             .filter(Boolean),
+        allowVercelDeployments: process.env.CORS_ALLOW_VERCEL === 'true',
     },
     bcrypt: {
         saltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12,

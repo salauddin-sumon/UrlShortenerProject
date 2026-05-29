@@ -17,18 +17,27 @@ const app = express();
 
 app.set('trust proxy', 1);
 
-app.use(securityHeaders);
-logger.info('Security headers initialized');
-
 const normalizeOrigin = (origin) =>
     origin?.trim().replace(/\/$/, '');
+
+const isVercelDeployment = (origin) =>
+    /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(normalizeOrigin(origin));
 
 const isOriginAllowed = (origin) => {
     if (!origin) return true;
     const normalized = normalizeOrigin(origin);
-    return config.cors.origins.some(
+
+    if (config.cors.origins.some(
         (allowed) => normalizeOrigin(allowed) === normalized
-    );
+    )) {
+        return true;
+    }
+
+    if (config.cors.allowVercelDeployments && isVercelDeployment(normalized)) {
+        return true;
+    }
+
+    return false;
 };
 
 app.use(cors({
@@ -38,7 +47,8 @@ app.use(cors({
         } else {
             logger.warn('CORS blocked request', {
                 origin,
-                allowed: config.cors.origins
+                allowed: config.cors.origins,
+                allowVercel: config.cors.allowVercelDeployments
             });
             callback(null, false);
         }
@@ -48,7 +58,13 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     optionsSuccessStatus: 204
 }));
-logger.info('CORS allowed origins', { origins: config.cors.origins });
+logger.info('CORS configured', {
+    origins: config.cors.origins,
+    allowVercelDeployments: config.cors.allowVercelDeployments
+});
+
+app.use(securityHeaders);
+logger.info('Security headers initialized');
 
 app.use('/api', apiLimiter);
 app.use(requestLogger);

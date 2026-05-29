@@ -117,6 +117,11 @@ JWT_REFRESH_EXPIRY=7d
 # CORS — must match the frontend origin
 CORS_ORIGIN=http://localhost:3000
 
+# Seed admin (required only when running npm run seed:admin)
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=choose_a_strong_password
+ADMIN_NAME=Super Admin
+
 # Optional
 BCRYPT_SALT_ROUNDS=12
 LOG_LEVEL=debug
@@ -130,21 +135,13 @@ REACT_APP_API_URL=http://localhost:5000
 
 ### 4. Seed the super admin account
 
-From the `server` directory (requires `MONGODB_URI` in `.env`):
+Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `server/.env`, then from the `server` directory:
 
 ```bash
 npm run seed:admin
 ```
 
-This creates a default super admin if one does not already exist:
-
-| Field | Value |
-|-------|-------|
-| Email | `admin@urlshortener.com` |
-| Password | `Admin@123456` |
-| Role | `super_admin` |
-
-Change this password after first login in production.
+This creates a `super_admin` user if one with that email does not already exist. Credentials are never printed to the console.
 
 ### 5. Run the application
 
@@ -269,7 +266,7 @@ Short codes and custom aliases both resolve through this route. Expired links re
 |---------|-------------|
 | `npm start` | Run production server |
 | `npm run dev` | Run with Nodemon (hot reload) |
-| `npm run seed:admin` | Create default super admin user |
+| `npm run seed:admin` | Create super admin from `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` |
 
 ### Client (`client/`)
 
@@ -287,7 +284,7 @@ Short codes and custom aliases both resolve through this route. Expired links re
 - Point `MONGODB_URI` to a managed MongoDB cluster with network access restricted to your server.
 - Build the React app (`npm run build`) and serve it via a static host or reverse proxy; set `CORS_ORIGIN` to your frontend URL.
 - Refresh token cookies are marked `secure` in production — serve the API over HTTPS.
-- Change or remove the default seeded admin credentials before deploying.
+- Use a strong, unique `ADMIN_PASSWORD` when seeding; do not commit `.env` to version control.
 
 ---
 

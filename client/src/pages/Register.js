@@ -138,6 +138,11 @@ const Register = () => {
             Sign in
           </Link>
         </p>
+        <p className="text-center text-gray-400 mt-2">
+          <Link to="/" className="text-primary-400 hover:text-primary-300 font-medium transition-colors">
+            Back to home
+          </Link>
+        </p>
       </div>
     </div>
   );

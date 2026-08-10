@@ -100,6 +100,18 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+    if (err.name === 'TokenExpiredError') {
+        err.statusCode = 401;
+        err.status = 'fail';
+        err.message = 'Your session has expired. Please log in again.';
+        err.isOperational = true;
+    } else if (err.name === 'JsonWebTokenError') {
+        err.statusCode = 401;
+        err.status = 'fail';
+        err.message = 'Invalid authentication token. Please log in again.';
+        err.isOperational = true;
+    }
+
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
 

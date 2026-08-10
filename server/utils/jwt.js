@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const AppError = require('./AppError');
 
 const generateAccessToken = (userId) => {
     return jwt.sign(
@@ -18,11 +19,31 @@ const generateRefreshToken = (userId) => {
 };
 
 const verifyAccessToken = (token) => {
-    return jwt.verify(token, config.jwt.accessSecret);
+    try {
+        return jwt.verify(token, config.jwt.accessSecret);
+    } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            throw new AppError('Access token expired. Please log in again.', 401);
+        }
+        if (err.name === 'JsonWebTokenError') {
+            throw new AppError('Invalid access token. Please log in again.', 401);
+        }
+        throw err;
+    }
 };
 
 const verifyRefreshToken = (token) => {
-    return jwt.verify(token, config.jwt.refreshSecret);
+    try {
+        return jwt.verify(token, config.jwt.refreshSecret);
+    } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            throw new AppError('Refresh token expired. Please log in again.', 401);
+        }
+        if (err.name === 'JsonWebTokenError') {
+            throw new AppError('Invalid refresh token. Please log in again.', 401);
+        }
+        throw err;
+    }
 };
 
 module.exports = {
